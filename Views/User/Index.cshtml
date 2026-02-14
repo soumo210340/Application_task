@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "User Form";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <h4>Enter User</h4>
+        <form id="userForm" novalidate>
+            <!-- Hidden Id for updates -->
+            <input type="hidden" id="Id" name="Id" value="0" />
+            <!-- Hidden Hobbies field sent to server as CSV; UI uses HobbiesSelect -->
+            <input type="hidden" id="Hobbies" name="Hobbies" value="" />
+
+            <div class="mb-2">
+                <label for="Name" class="form-label">Name</label>
+                <input class="form-control" name="Name" id="Name" required />
+            </div>
+
+            <div class="mb-2">
+                <label for="Email" class="form-label">Email</label>
+                <input class="form-control" name="Email" id="Email" type="email" required />
+            </div>
+
+            <div class="mb-2">
+                <label for="MobileNo" class="form-label">Mobile No</label>
+                <input class="form-control" name="MobileNo" id="MobileNo" required pattern="^[0-9]{10}$" />
+            </div>
+
+            <div class="mb-2">
+                <label for="Address" class="form-label">Address</label>
+                <textarea class="form-control" name="Address" id="Address" required></textarea>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label">
