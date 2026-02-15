@@ -1,11 +1,11 @@
 $(function () {
+    var detailsModalEl = document.getElementById('detailsModal');
+    var detailsModal = detailsModalEl && window.bootstrap ? new bootstrap.Modal(detailsModalEl) : null;
 
-    // ---------------- ALERT ----------------
-    function showAlert(message) {
+    function showPopup(message) {
         alert(message);
     }
 
-    // ---------------- FORMAT ERROR ----------------
     function formatXhrError(xhr, defaultMsg) {
         try {
             if (!xhr) return defaultMsg || 'Unknown error';
@@ -19,7 +19,7 @@ $(function () {
                     Object.keys(xhr.responseJSON.errors).forEach(function (k) {
                         msgs = msgs.concat(xhr.responseJSON.errors[k]);
                     });
-                    return msgs.join('; ');
+                    return msgs.join('\n');
                 }
 
                 return JSON.stringify(xhr.responseJSON);
@@ -27,16 +27,50 @@ $(function () {
 
             if (xhr.responseText) return xhr.responseText;
             return defaultMsg || xhr.statusText || 'Request failed';
-
         } catch (e) {
             return defaultMsg || 'Request failed';
         }
     }
 
-    // ---------------- LOAD GRID ----------------
+    function validateFormWithPopup(form) {
+        var messages = [];
+        var elements = form.querySelectorAll('input, textarea, select');
+
+        elements.forEach(function (el) {
+            if (!el.checkValidity()) {
+                var label = $('label[for="' + el.id + '"]').first().text() || el.name || 'Field';
+                var message = el.validationMessage || (label + ' is invalid.');
+                messages.push(label + ': ' + message);
+            }
+        });
+
+        if (messages.length > 0) {
+            showPopup(messages.join('\n'));
+            return false;
+        }
+
+        return true;
+    }
+
+    function copyHobbiesToHidden() {
+        var sel = $('#HobbiesSelect').val();
+        if (sel && Array.isArray(sel) && sel.length > 0) {
+            $('#Hobbies').val(sel.join(','));
+        } else {
+            $('#Hobbies').val('');
+        }
+    }
+
+    function resetFormMode() {
+        $('#userForm')[0].reset();
+        $('#Id').val('0');
+        $('#Hobbies').val('');
+        $('#saveBtn').show();
+        $('#updateBtn').hide();
+    }
+
     function loadGrid() {
         $.get('/User/List', function (data) {
-
             var rows = '';
 
             data.forEach(function (d) {
@@ -47,28 +81,45 @@ $(function () {
                     '<td>' + (d.state || d.State) + '</td>' +
                     '<td>' + (d.hobbies || d.Hobbies) + '</td>' +
                     '<td>' +
-                    '<button type="button" class="btn btn-sm btn-info detailsBtn">Details</button> ' +
                     '<button type="button" class="btn btn-sm btn-warning editBtn">Edit</button> ' +
                     '<button type="button" class="btn btn-sm btn-danger deleteBtn">Delete</button>' +
                     '</td></tr>';
             });
 
             $('#userGrid tbody').html(rows);
-
         }).fail(function (xhr) {
-            showAlert('Error loading grid: ' + formatXhrError(xhr));
+            showPopup('Error loading grid: ' + formatXhrError(xhr));
+        });
+    }
+
+    function showDetails(id) {
+        $.get('/User/Details', { id: id }, function (d) {
+            var html =
+                '<p><strong>Name:</strong> ' + (d.name || d.Name) + '</p>' +
+                '<p><strong>Email:</strong> ' + (d.email || d.Email) + '</p>' +
+                '<p><strong>Mobile:</strong> ' + (d.mobileNo || d.MobileNo) + '</p>' +
+                '<p><strong>Address:</strong> ' + (d.address || d.Address) + '</p>' +
+                '<p><strong>Gender:</strong> ' + (d.gender || d.Gender) + '</p>' +
+                '<p><strong>State:</strong> ' + (d.state || d.State) + '</p>' +
+                '<p><strong>Hobbies:</strong> ' + (d.hobbies || d.Hobbies) + '</p>';
+
+            $('#detailsBody').html(html);
+            if (detailsModal) {
+                detailsModal.show();
+            } else {
+                showPopup($(html).text());
+            }
+        }).fail(function (xhr) {
+            showPopup('Error loading details: ' + formatXhrError(xhr));
         });
     }
 
     loadGrid();
 
-    // ---------------- STATE AUTOCOMPLETE ----------------
-    $('#State').on('input', function () {
-
+    $('#State').on('input focus', function () {
         var term = $(this).val();
 
         $.get('/User/GetStates', { term: term }, function (data) {
-
             var options = '';
 
             data.forEach(function (s) {
@@ -81,151 +132,103 @@ $(function () {
 
             $('#statesList').html(options);
             $('#State').attr('list', 'statesList');
-
         }).fail(function (xhr) {
-            showAlert('Error loading states: ' + formatXhrError(xhr));
+            showPopup('Error loading states: ' + formatXhrError(xhr));
         });
     });
 
-    // copy hobbies from HobbiesSelect into hidden Hobbies input
-    function copyHobbiesToHidden() {
-        try {
-            var sel = $('#HobbiesSelect').val();
-            if (sel && Array.isArray(sel)) {
-                $('#Hobbies').val(sel.join(','));
-            } else {
-                $('#Hobbies').val('');
-            }
-        } catch (e) {
-            // ignore
-        }
-    }
-
-    // ---------------- SAVE ----------------
     $('#userForm').submit(function (e) {
-
         e.preventDefault();
 
         var form = this;
+        copyHobbiesToHidden();
 
-        if (!form.checkValidity()) {
-            showAlert('Please fill all required fields correctly.');
+        if (!validateFormWithPopup(form)) {
             return;
         }
 
-        copyHobbiesToHidden();
-
-        var data = $(form).serialize();
-
-        $.post('/User/Create', data)
+        $.post('/User/Create', $(form).serialize())
             .done(function () {
-                showAlert('Saved successfully');
+                showPopup('Saved successfully');
                 loadGrid();
-                form.reset();
+                resetFormMode();
             })
             .fail(function (xhr) {
-                showAlert('Save failed: ' + formatXhrError(xhr));
+                showPopup('Save failed: ' + formatXhrError(xhr));
             });
     });
 
-    // ---------------- EDIT ----------------
-    $('#userGrid').on('click', '.editBtn', function () {
-
+    $('#userGrid').on('click', '.editBtn', function (e) {
+        e.stopPropagation();
         var id = $(this).closest('tr').data('id');
 
         $.get('/User/Details', { id: id }, function (d) {
-
             $('#Id').val(d.id || d.Id);
             $('#Name').val(d.name || d.Name);
             $('#Email').val(d.email || d.Email);
             $('#MobileNo').val(d.mobileNo || d.MobileNo);
             $('#Address').val(d.address || d.Address);
             $('#State').val(d.state || d.State);
-
             $('input[name="Gender"][value="' + (d.gender || d.Gender) + '"]').prop('checked', true);
 
-            try {
-                var hobbies = d.hobbies || d.Hobbies || '';
-                var arr = [];
-                if (Array.isArray(hobbies)) arr = hobbies;
-                else if (typeof hobbies === 'string' && hobbies.length) arr = hobbies.split(',').map(function (s) { return s.trim(); });
-
-                // set multiselect and hidden
-                $('#HobbiesSelect').val(arr);
-                $('#Hobbies').val(arr.join(','));
-            } catch (err) { }
+            var hobbies = d.hobbies || d.Hobbies || '';
+            var arr = Array.isArray(hobbies)
+                ? hobbies
+                : (typeof hobbies === 'string' && hobbies.length ? hobbies.split(',').map(function (s) { return s.trim(); }) : []);
+            $('#HobbiesSelect').val(arr);
+            $('#Hobbies').val(arr.join(','));
 
             $('#saveBtn').hide();
             $('#updateBtn').show();
-
         }).fail(function (xhr) {
-            showAlert('Error loading user: ' + formatXhrError(xhr));
+            showPopup('Error loading user: ' + formatXhrError(xhr));
         });
     });
 
-    // ---------------- UPDATE ----------------
     $('#updateBtn').click(function (e) {
-
         e.preventDefault();
 
         var form = $('#userForm')[0];
+        copyHobbiesToHidden();
 
-        if (!form.checkValidity()) {
-            showAlert('Please fill all required fields correctly.');
+        if (!validateFormWithPopup(form)) {
             return;
         }
 
-        copyHobbiesToHidden();
-
-        var data = $("#userForm").serialize();
-
-        $.post('/User/Update', data)
+        $.post('/User/Update', $('#userForm').serialize())
             .done(function () {
-                showAlert('Updated successfully');
+                showPopup('Updated successfully');
                 loadGrid();
-                form.reset();
-                $('#saveBtn').show();
-                $('#updateBtn').hide();
+                resetFormMode();
             })
             .fail(function (xhr) {
-                showAlert('Update failed: ' + formatXhrError(xhr));
+                showPopup('Update failed: ' + formatXhrError(xhr));
             });
     });
 
-    // ---------------- RESET ----------------
     $('#resetBtn').click(function () {
-        $('#userForm')[0].reset();
-        $('#saveBtn').show();
-        $('#updateBtn').hide();
+        resetFormMode();
     });
 
-    // ---------------- DELETE ----------------
-    $('#userGrid').on('click', '.deleteBtn', function () {
-
+    $('#userGrid').on('click', '.deleteBtn', function (e) {
+        e.stopPropagation();
         if (!confirm('Confirm delete?')) return;
 
         var id = $(this).closest('tr').data('id');
-
         $.post('/User/Delete', { id: id })
             .done(function () {
-                showAlert('Deleted successfully');
+                showPopup('Deleted successfully');
                 loadGrid();
             })
             .fail(function (xhr) {
-                showAlert('Delete failed: ' + formatXhrError(xhr));
+                showPopup('Delete failed: ' + formatXhrError(xhr));
             });
     });
 
-    // ---------------- DETAILS ----------------
-    $('#userGrid').on('click', '.detailsBtn', function () {
+    $('#userGrid').on('click', 'tbody tr', function () {
+        var id = $(this).data('id');
+        if (!id) return;
 
-        var id = $(this).closest('tr').data('id');
-
-        $.get('/User/Details', { id: id }, function (d) {
-
-            var html =
-                '<p><strong>Name:</strong> ' + (d.name || d.Name) + '</p>' +
-                '<p><strong>Email:</strong> ' + (d.email || d.Email) + '</p>' +
-                '<p><strong>Mobile:</strong> ' + (d.mobileNo || d.MobileNo) + '</p>' +
-                '<p><strong>Address:</strong> ' + (d.address || d.Address) + '</p>' +
-               
+        showDetails(id);
+    });
+});

@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="~/Application_task.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var mainContainerClass = string.Equals(currentController, "User", StringComparison.OrdinalIgnoreCase)
+            ? "container-fluid px-3 px-lg-4"
+            : "container";
+    }
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -30,7 +37,8 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="@mainContainerClass">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -41,6 +49,7 @@
             &copy; 2026 - Application_task - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
