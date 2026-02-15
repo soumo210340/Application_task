@@ -6,29 +6,27 @@ namespace Application_task.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Name is required.")]
         public string Name { get; set; }
 
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; }
 
-        [Required]
-        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Invalid Mobile Number")]
+        [Required(ErrorMessage = "Mobile number is required.")]
+        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Mobile number must be exactly 10 digits.")]
         public string MobileNo { get; set; }
 
-        [Required]
-
-
+        [Required(ErrorMessage = "Address is required.")]
         public string Address { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Gender is required.")]
         public string Gender { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "State is required.")]
         public string State { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Hobbies are required.")]
         public string Hobbies { get; set; } // Comma separated
     }
 }
