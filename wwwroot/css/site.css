@@ -1,22 +1,166 @@
 html {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 17px;
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root{
+  --brand: #1f6feb; /* primary */
+  --accent: #7dd3fc; /* light */
+  --muted: #6c757d;
+  --card-bg: #ffffff;
 }
 
 body {
   margin-bottom: 60px;
+  background: linear-gradient(180deg, #f3f6f9 0%, #eef3f7 100%);
+  color: #24313a;
+  -webkit-font-smoothing:antialiased;
+}
+
+.container {
+  max-width: 1420px;
+  padding-top: 0.65rem;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(31,111,235,0.25);
+}
+
+.card {
+  border: 0;
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(250,251,253,0.96));
+}
+
+.card.shadow-sm{
+  box-shadow: 0 6px 18px rgba(28,40,50,0.06);
+}
+
+.card .card-body {
+  padding: 1.35rem;
+}
+
+h5.card-title{
+  color: #0f1724;
+  font-weight: 700;
+  font-size: 1.28rem;
+}
+
+.row.gx-4.gy-4 {
+  align-items: flex-start;
+}
+
+.form-label{
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+.form-control, .form-select {
+  border-radius: 0.35rem;
+  border: 1px solid #e6eef6;
+  background: #fff;
+  min-height: 46px;
+  font-size: 1.02rem;
+  padding: 0.62rem 0.78rem;
+}
+
+textarea.form-control {
+  min-height: 120px;
+}
+
+.form-control::placeholder { color: #9aa6b2; }
+
+/* Table styling */
+.table thead th {
+  background: linear-gradient(90deg, rgba(31,111,235,0.04), rgba(125,211,252,0.02));
+  border-bottom: 1px solid rgba(30, 41, 59, 0.06);
+  color: #0f1724;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  padding-top: 0.95rem;
+  padding-bottom: 0.95rem;
+}
+
+#userGrid tbody tr:hover {
+  background: rgba(31,111,235,0.03);
+  cursor: pointer;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  font-size: 1.05rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+#userGrid {
+  border-radius: 0.55rem;
+  overflow: hidden;
+}
+
+/* Make table panel more prominent and visually zoomed in */
+.col-lg-9 .card {
+  transform: scale(1.01);
+  transform-origin: top center;
+}
+
+.col-lg-9 .card .card-body {
+  padding: 1.45rem;
+}
+
+.col-lg-9 .card-title {
+  font-size: 1.35rem;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  background: #155bd1;
+  border-color: #155bd1;
+}
+
+.btn-warning {
+  background: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.btn-danger {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+/* small action buttons inside table */
+.btn-sm {
+  padding: .34rem .58rem;
+  font-size: .82rem;
+}
+
+/* layout helpers */
+.container-fluid {
+  max-width: 1200px;
+}
+
+.form-text { color: var(--muted); }
+
+/* Responsive tweaks */
+@media (max-width: 767px){
+  html { font-size: 16px; }
+  .row.gx-4 { gap: 1rem; }
+  .col-lg-3, .col-lg-9 { flex: 0 0 100%; max-width: 100%; }
+  .card { margin-bottom: 1rem; }
+
+  .col-lg-9 .card {
+    transform: none;
+  }
 }
