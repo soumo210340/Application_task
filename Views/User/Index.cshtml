@@ -2,82 +2,98 @@
     ViewData["Title"] = "User Form";
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <h4>Enter User</h4>
-        <form id="userForm" novalidate>
-            <input type="hidden" id="Id" name="Id" value="0" />
-            <input type="hidden" id="Hobbies" name="Hobbies" value="" />
+<div class="user-page-wrapper">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="row g-4 align-items-start">
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm user-form-card">
+                        <div class="card-body">
+                            <h4 class="mb-3">Enter User</h4>
+                            <form id="userForm" novalidate>
+                                <input type="hidden" id="Id" name="Id" value="0" />
+                                <input type="hidden" id="Hobbies" name="Hobbies" value="" />
 
-            <div class="mb-2">
-                <label for="Name" class="form-label">Name</label>
-                <input class="form-control" name="Name" id="Name" required />
-            </div>
+                                <div class="mb-2">
+                                    <label for="Name" class="form-label">Name</label>
+                                    <input class="form-control" name="Name" id="Name" required />
+                                </div>
 
-            <div class="mb-2">
-                <label for="Email" class="form-label">Email</label>
-                <input class="form-control" name="Email" id="Email" type="email" required />
-            </div>
+                                <div class="mb-2">
+                                    <label for="Email" class="form-label">Email</label>
+                                    <input class="form-control" name="Email" id="Email" type="email" required />
+                                </div>
 
-            <div class="mb-2">
-                <label for="MobileNo" class="form-label">Mobile No</label>
-                <input class="form-control" name="MobileNo" id="MobileNo" required pattern="^[0-9]{10}$" />
-            </div>
+                                <div class="mb-2">
+                                    <label for="MobileNo" class="form-label">Mobile No</label>
+                                    <input class="form-control" name="MobileNo" id="MobileNo" required pattern="^[0-9]{10}$" />
+                                </div>
 
-            <div class="mb-2">
-                <label for="Address" class="form-label">Address</label>
-                <textarea class="form-control" name="Address" id="Address" required></textarea>
-            </div>
+                                <div class="mb-2">
+                                    <label for="Address" class="form-label">Address</label>
+                                    <textarea class="form-control" name="Address" id="Address" required></textarea>
+                                </div>
 
-            <div class="mb-2">
-                <label class="form-label">Gender</label><br />
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="Gender" id="GenderMale" value="Male" required />
-                    <label class="form-check-label" for="GenderMale">Male</label>
+                                <div class="mb-2">
+                                    <label class="form-label">Gender</label><br />
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="Gender" id="GenderMale" value="Male" required />
+                                        <label class="form-check-label" for="GenderMale">Male</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="Gender" id="GenderFemale" value="Female" required />
+                                        <label class="form-check-label" for="GenderFemale">Female</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="State" class="form-label">State</label>
+                                    <input class="form-control" name="State" id="State" required autocomplete="off" />
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="HobbiesSelect" class="form-label">Hobbies</label>
+                                    <select class="form-select" id="HobbiesSelect" multiple required>
+                                        <option value="Reading">Reading</option>
+                                        <option value="Sports">Sports</option>
+                                        <option value="Travel">Travel</option>
+                                        <option value="Music">Music</option>
+                                    </select>
+                                    <div class="form-text">Hold Ctrl (Windows) / Cmd (Mac) to select multiple.</div>
+                                </div>
+
+                                <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
+                                <button type="button" id="updateBtn" class="btn btn-warning" style="display:none">Update</button>
+                                <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="Gender" id="GenderFemale" value="Female" required />
-                    <label class="form-check-label" for="GenderFemale">Female</label>
+
+                <div class="col-12 col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="mb-3">Users</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover mb-0" id="userGrid">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Mobile</th>
+                                            <th>State</th>
+                                            <th>Hobbies</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="mb-2">
-                <label for="State" class="form-label">State</label>
-                <input class="form-control" name="State" id="State" required autocomplete="off" />
-            </div>
-
-            <div class="mb-2">
-                <label for="HobbiesSelect" class="form-label">Hobbies</label>
-                <select class="form-select" id="HobbiesSelect" multiple required>
-                    <option value="Reading">Reading</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Music">Music</option>
-                </select>
-                <div class="form-text">Hold Ctrl (Windows) / Cmd (Mac) to select multiple.</div>
-            </div>
-
-            <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
-            <button type="button" id="updateBtn" class="btn btn-warning" style="display:none">Update</button>
-            <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
-        </form>
-    </div>
-
-    <div class="col-md-8">
-        <h4>Users</h4>
-        <table class="table table-bordered table-hover" id="userGrid">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                    <th>State</th>
-                    <th>Hobbies</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        </div>
     </div>
 </div>
 
