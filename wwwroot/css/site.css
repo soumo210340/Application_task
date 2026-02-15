@@ -20,3 +20,13 @@ html {
 body {
   margin-bottom: 60px;
 }
+.user-page-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.user-form-card {
+  position: sticky;
+  top: 1rem;
+}
