@@ -46,13 +46,19 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
 
-    // Only enable HTTPS redirection in non-development environments to avoid the "Failed to determine the https port" warning during development.
+// Only enable HTTPS redirection in non-development environments to avoid the "Failed to determine the https port" warning during development.
+if (!app.Environment.IsDevelopment())
+{
     app.UseHttpsRedirection();
 }
 

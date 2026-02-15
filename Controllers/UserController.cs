@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Application_task.Controllers
 {
-    // Renamed from UserController2 to UserController so routing with {controller=User} works.
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -24,7 +23,6 @@ namespace Application_task.Controllers
 
         public IActionResult Index()
         {
-            // Return the conventional view so Views/User/Index.cshtml is used.
             return View();
         }
 
@@ -34,9 +32,11 @@ namespace Application_task.Controllers
             try
             {
                 var list = await _db.States
-                    .Where(s => string.IsNullOrEmpty(term) || s.Name.Contains(term))
+                    .Where(s => string.IsNullOrWhiteSpace(term) || s.Name.Contains(term))
+                    .OrderBy(s => s.Name)
                     .Select(s => new { id = s.Id, text = s.Name })
                     .ToListAsync();
+
                 return Json(list);
             }
             catch (Exception ex)
@@ -51,7 +51,6 @@ namespace Application_task.Controllers
         {
             try
             {
-                // Remove Id modelstate entry because form may send empty string which doesn't bind to int
                 if (ModelState.ContainsKey("Id")) ModelState.Remove("Id");
 
                 if (!ModelState.IsValid)
@@ -64,7 +63,7 @@ namespace Application_task.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating user");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, "Unable to save user right now.");
             }
         }
 
@@ -73,18 +72,20 @@ namespace Application_task.Controllers
         {
             try
             {
-                var items = await _db.UserDatas.ToListAsync();
-                var data = items.Select(u => new
-                {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Email = u.Email,
-                    MobileNo = u.MobileNo,
-                    Address = u.Address,
-                    Gender = u.Gender,
-                    State = u.State,
-                    Hobbies = u.Hobbies
-                }).ToList();
+                var data = await _db.UserDatas
+                    .OrderByDescending(u => u.Id)
+                    .Select(u => new
+                    {
+                        u.Id,
+                        u.Name,
+                        u.Email,
+                        u.MobileNo,
+                        u.Address,
+                        u.Gender,
+                        u.State,
+                        u.Hobbies
+                    })
+                    .ToListAsync();
 
                 return Json(data);
             }
@@ -101,15 +102,16 @@ namespace Application_task.Controllers
             try
             {
                 var item = await _db.UserDatas.FindAsync(id);
-                if (item == null) return NotFound();
+                if (item == null) return NotFound("User not found.");
+
                 _db.UserDatas.Remove(item);
                 await _db.SaveChangesAsync();
-                return Ok();
+                return Ok(new { success = true });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting user");
-                return StatusCode(500);
+                return StatusCode(500, "Unable to delete user right now.");
             }
         }
 
@@ -119,8 +121,10 @@ namespace Application_task.Controllers
             try
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
+
                 var existing = await _db.UserDatas.FindAsync(model.Id);
-                if (existing == null) return NotFound();
+                if (existing == null) return NotFound("User not found.");
+
                 existing.Name = model.Name;
                 existing.Email = model.Email;
                 existing.MobileNo = model.MobileNo;
@@ -128,29 +132,31 @@ namespace Application_task.Controllers
                 existing.Gender = model.Gender;
                 existing.State = model.State;
                 existing.Hobbies = model.Hobbies;
+
                 await _db.SaveChangesAsync();
-                return Ok();
+                return Ok(new { success = true });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating user");
-                return StatusCode(500);
+                return StatusCode(500, "Unable to update user right now.");
             }
         }
 
         [HttpGet]
-        public async Task<JsonResult> Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             try
             {
                 var item = await _db.UserDatas.FindAsync(id);
-                if (item == null) return Json(new { });
+                if (item == null) return NotFound(new { error = "User not found." });
+
                 return Json(item);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching details");
-                return Json(new { });
+                return StatusCode(500, new { error = "Unable to fetch user details right now." });
             }
         }
     }
