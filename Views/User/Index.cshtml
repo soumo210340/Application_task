@@ -6,9 +6,7 @@
     <div class="col-md-4">
         <h4>Enter User</h4>
         <form id="userForm" novalidate>
-            <!-- Hidden Id for updates -->
             <input type="hidden" id="Id" name="Id" value="0" />
-            <!-- Hidden Hobbies field sent to server as CSV; UI uses HobbiesSelect -->
             <input type="hidden" id="Hobbies" name="Hobbies" value="" />
 
             <div class="mb-2">
@@ -32,4 +30,72 @@
             </div>
 
             <div class="mb-2">
-                <label class="form-label">
+                <label class="form-label">Gender</label><br />
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" id="GenderMale" value="Male" required />
+                    <label class="form-check-label" for="GenderMale">Male</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Gender" id="GenderFemale" value="Female" required />
+                    <label class="form-check-label" for="GenderFemale">Female</label>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label for="State" class="form-label">State</label>
+                <input class="form-control" name="State" id="State" required autocomplete="off" />
+            </div>
+
+            <div class="mb-2">
+                <label for="HobbiesSelect" class="form-label">Hobbies</label>
+                <select class="form-select" id="HobbiesSelect" multiple required>
+                    <option value="Reading">Reading</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Music">Music</option>
+                </select>
+                <div class="form-text">Hold Ctrl (Windows) / Cmd (Mac) to select multiple.</div>
+            </div>
+
+            <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
+            <button type="button" id="updateBtn" class="btn btn-warning" style="display:none">Update</button>
+            <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
+        </form>
+    </div>
+
+    <div class="col-md-8">
+        <h4>Users</h4>
+        <table class="table table-bordered table-hover" id="userGrid">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>State</th>
+                    <th>Hobbies</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="detailsBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/user.js"></script>
+}
